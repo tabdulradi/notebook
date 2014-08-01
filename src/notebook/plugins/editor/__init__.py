@@ -1,4 +1,6 @@
-import SimpleHTTPServer, SocketServer
+from __future__ import with_statement
+import SimpleHTTPServer
+import SocketServer
 import os
 import posixpath
 import urllib
@@ -11,7 +13,8 @@ def ui_hook(arg, args, pipeline):
 
 
 hooks = {
-    "--ui": ui_hook
+    "--long": ui_hook,
+    "-l": ui_hook
 }
 
 
@@ -26,6 +29,8 @@ class MyHttpServer(SocketServer.TCPServer):
 
 
 class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+        static_path = os.path.dirname(__file__) + "/static/"
+
         def translate_path(self, path):
             """Translate a /-separated PATH to the local filename syntax.
 
@@ -39,8 +44,7 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             path = posixpath.normpath(urllib.unquote(path))
             words = path.split('/')
             words = filter(None, words)
-            path = os.path.dirname(__file__) + "/static/"
-            print path
+            path = MyRequestHandler.static_path
             for word in words:
                 drive, word = os.path.splitdrive(word)
                 head, word = os.path.split(word)
@@ -50,6 +54,8 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             print path
             return path
 
+        # TODO: Index should contain the body passed from command line.
+        # TODO: External CSS/JS files should be packaged within app, for offline access
         # def render_index(self):
         #     f = self.send_head()
         #     if f:
@@ -67,10 +73,13 @@ class MyRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         def do_POST(self):
             length = int(self.headers.getheader('content-length'))
-            data = self.rfile.read(length)
-            self.send_response(200, "OK")
+            self.server.output_data = self.rfile.read(length)
+            self.send_response(201)
+            self.end_headers()
+            with open(MyRequestHandler.static_path + "done.html") as f:
+                self.copyfile(f, self.wfile)
+
             self.finish()
-            self.server.output_data = data
 
 
 def read(data):

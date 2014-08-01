@@ -1,3 +1,5 @@
+from __future__ import with_statement
+from __builtin__ import next
 import os
 import os.path
 from datetime import datetime
@@ -9,10 +11,11 @@ base_path_candidates = [
     os.path.expanduser("~/Documents/notebook"),
     os.path.expanduser("~/documents/notebook"),
     os.path.expanduser("~/Documents/"),
-    os.path.expanduser("~/documents/")
+    os.path.expanduser("~/documents/"),
+    os.getcwd()
 ]
 
-base_path = next((p for p in base_path_candidates if os.path.exists(p)), os.getcwd())
+base_path = next(p for p in base_path_candidates if os.path.exists(p))
 
 
 def store(d):
@@ -31,6 +34,7 @@ def store(d):
 
     print "Note stored to %s" % fn
     return d
+
 
 def set_title(data):
     title = data["body"][:10]  # TODO: this should be smarter!

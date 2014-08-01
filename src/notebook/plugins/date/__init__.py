@@ -9,5 +9,5 @@ def yesterday(arg, args, pipeline):
 
 hooks = {
     "--yesterday": yesterday,
-    # "--date": date,
+    # "--date": date, # TODO: implement date parsing
 }

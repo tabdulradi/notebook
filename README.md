@@ -5,8 +5,8 @@ However when it comes to long notes/articles, Notebook can spawn a WYSIWYG edito
 ## Usage
 ```
 nbk I am bored today
-nbk --yesterday I bought a new car # Changes file modifcation time
-nbk --ui my title # Open a WYSIWYG editor in your browser
+nbk --yesterday I bought a new car # Changes file modification time
+nbk --long my title # Open a WYSIWYG editor in your browser
 ```
 
 ##Installation
